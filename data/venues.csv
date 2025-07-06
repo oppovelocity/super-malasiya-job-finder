@@ -1,0 +1,8 @@
+# =============================================================================
+# data/venues.csv - Sample Venue Data
+# =============================================================================
+
+name,phone,address,category
+"Mario's Restaurant","+1234567890","123 Main St","restaurant"
+"Coffee Central","+1234567891","456 Oak Ave","cafe"
+"The Burger Joint","+1234567892","789 Pine Rd","restaurant"

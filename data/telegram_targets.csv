@@ -1,0 +1,8 @@
+# =============================================================================
+# data/telegram_targets.csv - Sample Telegram Targets
+# =============================================================================
+
+username,name,category
+"restaurant_owner","Mario","restaurant"
+"cafe_manager","Sarah","cafe"
+"bar_owner","Mike","bar"

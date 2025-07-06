@@ -1,0 +1,8 @@
+# =============================================================================
+# data/websites.csv - Sample Website Data
+# =============================================================================
+
+name,url,category
+"Mario's Restaurant","https://marios-restaurant.com","restaurant"
+"Coffee Central","https://coffee-central.com","cafe"
+"The Burger Joint","https://burger-joint.com","restaurant"

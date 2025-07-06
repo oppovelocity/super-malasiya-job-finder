@@ -1,0 +1,100 @@
+#!/bin/bash
+# get_malaysia_venues.sh
+
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+OUTPUT_FILE="venues_MY_${TIMESTAMP}.csv"
+
+curl -s "https://overpass-api.de/api/interpreter" \
+  --data '[out:json][timeout:25];
+    (
+      node["amenity"~"restaurant|bar|cafe|fast_food"]["addr:country"="MY"];
+      way["amenity"~"restaurant|bar|cafe|fast_food"]["addr:country"="MY"];
+      relation["amenity"~"restaurant|bar|cafe|fast_food"]["addr:country"="MY"];
+    );
+    out center meta;' | \
+jq -r '.elements[] | 
+  select(.tags.name != null) |
+  [
+    .tags.name // "N/A",
+    .tags.phone // .tags["contact:phone"] // "N/A",
+    .tags["addr:city"] // .tags["addr:state"] // "N/A",
+    .tags.amenity // "N/A",
+    .tags.description // "N/A"
+  ] | @csv' | \
+awk 'BEGIN {
+  print "name,phone,city,category,description"
+}
+{
+  gsub(/^"|"$/, "", $0)
+  gsub(/"/, "\"\"", $0)
+  print $0
+}' > "$OUTPUT_FILE"
+
+echo "CSV saved"
+
+# job_signal_detector.py
+
+import pandas as pd
+import glob
+import re
+import os
+from datetime import datetime
+
+hiring_patterns = [
+    r'hiring',
+    r'vacancy',
+    r'join our team',
+    r'we are looking for',
+    r'staff needed',
+    r'now hiring',
+    r'career opportunity',
+    r'job opening',
+    r'help wanted',
+    r'recruiting'
+]
+
+def scan_for_hiring_signals(df):
+    hiring_leads = []
+    
+    for _, row in df.iterrows():
+        name = str(row.get('name', '')).lower()
+        description = str(row.get('description', '')).lower()
+        
+        text_to_scan = f"{name} {description}"
+        
+        for pattern in hiring_patterns:
+            if re.search(pattern, text_to_scan, re.IGNORECASE):
+                hiring_leads.append({
+                    'name': row.get('name', ''),
+                    'phone': row.get('phone', ''),
+                    'city': row.get('city', ''),
+                    'category': row.get('category', ''),
+                    'description': row.get('description', ''),
+                    'hiring_signal': pattern,
+                    'detected_at': datetime.now().isoformat()
+                })
+                break
+    
+    return hiring_leads
+
+def main():
+    csv_files = glob.glob('venues_MY_*.csv')
+    
+    if not csv_files:
+        print("No venue CSV files found")
+        return
+    
+    latest_file = max(csv_files, key=os.path.getctime)
+    df = pd.read_csv(latest_file)
+    
+    hiring_leads = scan_for_hiring_signals(df)
+    
+    if hiring_leads:
+        leads_df = pd.DataFrame(hiring_leads)
+        leads_df.to_csv('hiring_leads.csv', index=False)
+        print(f"Detected {len(hiring_leads)} hiring signals")
+    else:
+        print("No hiring signals detected")
+
+if __name__ == "__main__":
+    main()

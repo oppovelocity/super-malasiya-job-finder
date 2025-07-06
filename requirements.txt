@@ -1,0 +1,23 @@
+
+# =============================================================================
+# requirements.txt - Dependencies
+# =============================================================================
+
+# Core dependencies
+python-dotenv==1.0.0
+requests==2.31.0
+beautifulsoup4==4.12.2
+asyncio==3.4.3
+
+# API clients
+twilio==8.10.0
+pyrogram==2.0.106
+TgCrypto==1.2.5
+
+# Data processing
+pandas==2.0.3
+numpy==1.24.3
+
+# Optional: Local LLM support
+# transformer's==4.35.0
+# torch==2.1.0
